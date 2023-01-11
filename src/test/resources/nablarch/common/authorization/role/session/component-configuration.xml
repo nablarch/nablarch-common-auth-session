@@ -7,7 +7,7 @@
     <property name="defaultStoreName" value="inMemory" />
     <property name="availableStores">
       <list>
-        <component class="nablarch.common.authorization.session.InMemorySessionStore" />
+        <component class="nablarch.common.authorization.role.session.InMemorySessionStore" />
       </list>
     </property>
   </component>

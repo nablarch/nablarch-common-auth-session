@@ -1,5 +1,7 @@
-package nablarch.common.authorization.session;
+package nablarch.common.authorization.role.session;
 
+import nablarch.common.authorization.role.session.SessionStoreUserRoleResolver;
+import nablarch.common.authorization.role.session.SessionStoreUserRoleUtil;
 import nablarch.core.repository.ObjectLoader;
 import nablarch.core.repository.SystemRepository;
 import nablarch.fw.ExecutionContext;
@@ -18,11 +20,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
 /**
- * {@link SessionStoreUserAuthorityUtil}の単体テスト。
+ * {@link SessionStoreUserRoleUtil}の単体テスト。
  * @author Tanaka Tomoyuki
  */
-public class SessionStoreUserAuthorityUtilTest {
-    private final MockSessionStoreUserAuthorityResolver mockSessionStoreUserAuthorityResolver = new MockSessionStoreUserAuthorityResolver();
+public class SessionStoreUserRoleUtilTest {
+    private final MockSessionStoreUserRoleResolver mockSessionStoreUserRoleResolver = new MockSessionStoreUserRoleResolver();
     private final ExecutionContext context = new ExecutionContext();
 
     @Before
@@ -32,7 +34,7 @@ public class SessionStoreUserAuthorityUtilTest {
             @Override
             public Map<String, Object> load() {
                 final Map<String, Object> objects = new HashMap<String, Object>();
-                objects.put("userAuthorityResolver", mockSessionStoreUserAuthorityResolver);
+                objects.put("userRoleResolver", mockSessionStoreUserRoleResolver);
                 return objects;
             }
         });
@@ -43,49 +45,49 @@ public class SessionStoreUserAuthorityUtilTest {
      */
     @Test
     public void testSave() {
-        Collection<String> authorities = Arrays.asList("FOO", "BAR", "FIZZ", "BUZZ");
+        Collection<String> roles = Arrays.asList("FOO", "BAR", "FIZZ", "BUZZ");
 
-        SessionStoreUserAuthorityUtil.save(authorities, context);
+        SessionStoreUserRoleUtil.save(roles, context);
 
-        assertThat(mockSessionStoreUserAuthorityResolver.authorities, is(sameInstance(authorities)));
-        assertThat(mockSessionStoreUserAuthorityResolver.context, is(sameInstance(context)));
+        assertThat(mockSessionStoreUserRoleResolver.roles, is(sameInstance(roles)));
+        assertThat(mockSessionStoreUserRoleResolver.context, is(sameInstance(context)));
     }
 
     /**
-     * saveメソッドのテスト(UserAuthorityResolverのコンポーネントが見つからなかった場合は例外をスローする)。
+     * saveメソッドのテスト(UserRoleResolverのコンポーネントが見つからなかった場合は例外をスローする)。
      */
     @Test
-    public void testSaveThrowsExceptionIfUserAuthorityResolverIsNotFound() {
+    public void testSaveThrowsExceptionIfUserRoleResolverIsNotFound() {
         SystemRepository.clear();
 
         final IllegalStateException exception = assertThrows(IllegalStateException.class, new ThrowingRunnable() {
             @Override
             public void run() {
-                Collection<String> authorities = Arrays.asList("FOO", "BAR", "FIZZ", "BUZZ");
-                SessionStoreUserAuthorityUtil.save(authorities, context);
+                Collection<String> roles = Arrays.asList("FOO", "BAR", "FIZZ", "BUZZ");
+                SessionStoreUserRoleUtil.save(roles, context);
             }
         });
 
         assertThat(exception.getMessage(),
-            is("The component of SessionStoreUserAuthorityResolver named as 'userAuthorityResolver' is not found."));
+            is("The component of SessionStoreUserRoleResolver named as 'userRoleResolver' is not found."));
     }
 
     /**
-     * {@link SessionStoreUserAuthorityResolver}のモック。
+     * {@link SessionStoreUserRoleResolver}のモック。
      */
-    private static class MockSessionStoreUserAuthorityResolver extends SessionStoreUserAuthorityResolver {
+    private static class MockSessionStoreUserRoleResolver extends SessionStoreUserRoleResolver {
         /**
-         * saveメソッドに渡された権限一覧。
+         * saveメソッドに渡されたロール一覧。
          */
-        private Collection<String> authorities;
+        private Collection<String> roles;
         /**
          * saveメソッドに渡された実行コンテキスト。
          */
         private ExecutionContext context;
 
         @Override
-        public void save(Collection<String> authorities, ExecutionContext context) {
-            this.authorities = authorities;
+        public void save(Collection<String> roles, ExecutionContext context) {
+            this.roles = roles;
             this.context = context;
         }
     }
