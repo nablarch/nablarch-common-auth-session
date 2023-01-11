@@ -1,4 +1,4 @@
-package nablarch.common.authorization.session;
+package nablarch.common.authorization.role.session;
 
 import nablarch.common.web.session.SessionEntry;
 import nablarch.common.web.session.SessionStore;
